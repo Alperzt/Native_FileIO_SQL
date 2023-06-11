@@ -32,21 +32,44 @@ public class RegisterController {
         readData = Integer.valueOf(dataToString);
         return readData;
     }
-    public static void FileWriter(){
+    public static void FileWriter(String data){
         try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(PathName.myPathName,false))) {
-            String data =  userData();
             bufferedWriter.write(data);
             bufferedWriter.flush();
         }catch (Exception exception){
             exception.printStackTrace();
         }
     }
-
     public static void isLogin(){
+        int counter = FileReader();
+        while(true){
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("kullanici adinizi giriniz : ");
+            String temporaryUserName = scanner.nextLine();
+            System.out.println("sifrenizi giriniz : ");
+            String temporaryPassword = scanner.nextLine();
+            if (temporaryUserName.equals(PathName.adminUserName) && temporaryPassword.equals(PathName.adminPassword)){
+                System.out.println("tebrikler giris yaptiniz !");
+                FileWriter("5");
+                break;
+            }
+            else {
+                counter--;
+                System.out.println("Kullanici adiniz veya sifreniz yanlis kalan giris hakkiniz : "  + counter);
+                FileWriter(Integer.toString(counter));
+            }
+            if (counter == 0){
+                System.out.println("Hesabiniz bloke edildi.");
+                break;
+            }
+        }
 
     }
     public static void main(String[] args) {
-        FileWriter();
-        System.out.println(FileReader());
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Giris hakkini belirleyin : ");
+        int rightOfEntry = scanner.nextInt();
+        FileWriter(Integer.toString(rightOfEntry));
+        isLogin();
     }
 }
