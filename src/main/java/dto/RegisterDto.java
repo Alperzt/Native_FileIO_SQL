@@ -3,7 +3,6 @@ package dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -17,16 +16,16 @@ public class RegisterDto extends BaseDto implements Serializable {
     private String uName;
     private String uEmail;
     private String uSurName;
-    private String pword;
+    private String password;
 
     public RegisterDto() {
     }
 
-    public RegisterDto(long id, Date systemCreatedDate, String uName, String uEmail, String uSurName, String pword) {
+    public RegisterDto(long id, Date systemCreatedDate, String uName, String uEmail, String uSurName, String password) {
         super(id, systemCreatedDate);
         this.uName = uName;
         this.uEmail = uEmail;
         this.uSurName = uSurName;
-        this.pword = pword;
+        this.password = password;
     }
 }
