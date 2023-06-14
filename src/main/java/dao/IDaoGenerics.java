@@ -9,11 +9,9 @@ public interface IDaoGenerics <T>{
     public void Create(T t);
     public void Update(T t);
     public void Delete(T t);
-    public void FindById(Long id);
+    public T FindById(Long id);
     public ArrayList<T> list();
-
     default Connection getInterfaceConnection(){
         return DatabaseConnection.getInstance().getConnection();
     }
-
 }

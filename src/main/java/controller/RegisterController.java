@@ -54,12 +54,12 @@ public class RegisterController {
         }
     }
     private static void BlogPage(){
-        System.out.println("Blog sayfasına hoşgeldiniz !!");
-        System.out.println("Seçiminizi yapın ");
+        System.out.println("Blog sayfasina hosgeldiniz !!");
+        System.out.println("Seciminizi yapın ");
     }
-    private static void RedirectToBlog(){
+    public static void RedirectToBlog(){
         if(isLogin()){
-            System.out.println("Blog sayfasına yönlendiriliyorsunuz...");
+            System.out.println("Blog sayfasina yönlendiriliyorsunuz...");
             BlogPage();
         }
 

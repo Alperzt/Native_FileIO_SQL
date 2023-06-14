@@ -1,13 +1,11 @@
 package dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
 
-@Data
+@Getter @Setter
 @AllArgsConstructor
 @Builder
 public class RegisterDto extends BaseDto implements Serializable {
