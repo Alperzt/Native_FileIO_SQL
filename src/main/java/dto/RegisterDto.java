@@ -1,29 +1,32 @@
 package dto;
 
 import lombok.*;
-
 import java.io.Serializable;
 import java.util.Date;
 
-@Getter @Setter
+// LOMBOK
+@Getter
+@Setter
 @AllArgsConstructor
 @Builder
 public class RegisterDto extends BaseDto implements Serializable {
-    public static final Long serialVersionUID=1L;
+    public static final Long serialVersionUID = 1L;
 
     private String uName;
+    private String uSurname;
     private String uEmail;
-    private String uSurName;
-    private String password;
+    private String uPassword;
 
-    public RegisterDto() {
-    }
+    // extends ile çalışıyorsanız bunu yapalım.
+    // parametresiz constructor
+    public RegisterDto() {}
 
-    public RegisterDto(long id, Date systemCreatedDate, String uName, String uEmail, String uSurName, String password) {
+    // parametreli constructor
+    public RegisterDto(Long id, Date systemCreatedDate, String uName, String uSurname, String uEmail, String uPassword) {
         super(id, systemCreatedDate);
         this.uName = uName;
+        this.uSurname = uSurname;
         this.uEmail = uEmail;
-        this.uSurName = uSurName;
-        this.password = password;
+        this.uPassword = uPassword;
     }
-}
+}// end class

@@ -1,26 +1,39 @@
 package dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
+import lombok.*;
 import java.io.Serializable;
 import java.util.Date;
 
-@Data
-@AllArgsConstructor
-
+// LOMBOK
+@Getter
+@Setter
 public class BlogDto extends BaseDto implements Serializable {
-    public static final Long serialVersionUID=1L;
+    public static final Long serialVersionUID = 1L;
 
     private String header;
     private String content;
 
-    public BlogDto(long id, Date systemCreatedDate, String header, String content) {
+    // parametresiz constructor
+    public BlogDto() {
+    }
+
+    // parametreli super constructor
+    public BlogDto(Long id, Date systemCreatedDate) {
+        super(id, systemCreatedDate);
+    }
+
+    // parametreli constructor
+    public BlogDto(Long id, Date systemCreatedDate, String header, String content) {
         super(id, systemCreatedDate);
         this.header = header;
         this.content = content;
     }
 
-    public BlogDto() {
+    @Override
+    public String toString() {
+        return "BlogDto{" +
+                "header='" + header + '\'' +
+                ", content='" + content + '\'' +
+                "} " + super.toString();
     }
-}
+}// end class

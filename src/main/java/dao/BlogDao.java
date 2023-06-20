@@ -1,131 +1,165 @@
 package dao;
 
-import database.DatabaseConnection;
 import dto.BlogDto;
-import exception.BadRequestException;
-
+import exception.ResourceNotFoundException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class BlogDao implements IDaoGenerics<BlogDto> {
-    @Override
-    public void Create(BlogDto blogDto) {
-        try(Connection connection=getInterfaceConnection()) {
-            connection.setAutoCommit(false);
-            String sql = "INSERT INTO onepage.blog(header,content) VALUES (?,?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);//prepared statement java ile database arasındaki bağlantıyı kurar
-            preparedStatement.setString(1, blogDto.getHeader());
-            preparedStatement.setString(2, blogDto.getContent());
 
-            // Ekleme yapılsın
-            // preparedStatement.executeUpdate() --> CREATE, DELETE, UPDATE
-            // preparedStatement.executeQuery() --> SELECT
-            Integer rowsEffected = preparedStatement.executeUpdate(); // rows --> 0'dan büyükse eklendi, -1 ise eklenmedi
-            if (rowsEffected > 0 ){
+    // CREATE
+    @Override
+    public void create(BlogDto blogDto) {
+        try (Connection connection = getInterfaceConnection()) {
+            // Transaction: ya hep ya hiç kuralına göre çalışır
+            // Create, Delete, Update
+            connection.setAutoCommit(false);
+            // insert into one_page.blog (header,content) values ("Css2","Cont data css");
+            String sql = "insert into onePage.blog (header,content) values (?,?)";
+            PreparedStatement pstm = connection.prepareStatement(sql);
+            pstm.setString(1, blogDto.getHeader());
+            pstm.setString(2, blogDto.getContent());
+            // EKLEME YAPISILSIN
+            // executeUpdate: CREATE, DELETE, UPDATE
+            // executeQuery : SELECT
+            Integer rowsEffected = pstm.executeUpdate();
+            // Eğer Sıfırdan büyükse : Eklemiş -1=ise Eklenmemiş
+            if (rowsEffected > 0) {
                 System.out.println(BlogDto.class + " Eklendi");
                 connection.commit();
-            }else {
-                System.out.println(BlogDto.class + " Hata eklenmedi!");
+            } else {
+                System.out.println(BlogDto.class + " HATA Eklenmedi !!!!");
                 connection.rollback();
             }
-        }catch (Exception e){
+        } catch (SQLException sql) { // AritmeticException | ClassNotFoundException e
+            sql.printStackTrace();
+            throw new ResourceNotFoundException(" SQL Ekleme İstisnası " + sql);
+        } catch (Exception e) { // AritmeticException | ClassNotFoundException e
             e.printStackTrace();
         }
-    }
+    } // end CREATE
 
-    @Override
-    public void Update(BlogDto blogDto) {
-        try(Connection connection=getInterfaceConnection()) {
-            connection.setAutoCommit(false);
-            if (FindById(blogDto.getId()) != null){
-                String sql = "UPDATE onePage.blog set header =?,content = ? where id=?";
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);//prepared statement java ile database arasındaki bağlantıyı kurar
-                preparedStatement.setString(1, blogDto.getHeader());
-                preparedStatement.setString(2, blogDto.getContent());
-                preparedStatement.setLong(3,blogDto.getId());
-                // Update yapılsın
-                // preparedStatement.executeUpdate() --> CREATE, DELETE, UPDATE
-                // preparedStatement.executeQuery() --> SELECT
-                Integer rowsEffected = preparedStatement.executeUpdate(); // rows --> 0'dan büyükse eklendi, -1 ise eklenmedi
-                if (rowsEffected > 0 ){
-                    System.out.println(BlogDto.class + " Güncellendi");
-                    connection.commit();
-                }else {
-                    System.out.println(BlogDto.class + " Hata güncellenmedi!");
-                    connection.rollback();
-                }
-            }else {
-                throw new BadRequestException(blogDto.getId() + " Id yok!");
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void Delete(BlogDto blogDto) {
-        try(Connection connection=getInterfaceConnection()) {
-            connection.setAutoCommit(false);
-            if (FindById(blogDto.getId()) != null){
-                String sql = "DELETE FROM `onepage`.`blog` WHERE id = ?; ";
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);//prepared statement java ile database arasındaki bağlantıyı kurar
-                preparedStatement.setLong(1,blogDto.getId());
-                Integer rowsEffected = preparedStatement.executeUpdate(); // rows --> 0'dan büyükse eklendi, -1 ise eklenmedi
-                if (rowsEffected > 0 ){
-                    System.out.println(BlogDto.class + " Güncellendi");
-                    connection.commit();
-                }else {
-                    System.out.println(BlogDto.class + " Hata güncellenmedi!");
-                    connection.rollback();
-                }
-            }else {
-                throw new BadRequestException(blogDto.getId() + " Id yok!");
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public BlogDto FindById(Long id) {
-        BlogDto blogDto = new BlogDto();
-        try(Connection connection = getInterfaceConnection()) {
-            String sql = "SELECT * FROM onePage.blog WHERE id=" +id;
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()){
-                blogDto.setId(resultSet.getLong("id"));
-                blogDto.setHeader(resultSet.getString("header"));
-                blogDto.setContent(resultSet.getString("content"));
-                blogDto.setSystemCreatedDate(resultSet.getDate("created_date"));
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return blogDto;
-    }
-
+    // LIST
     @Override
     public ArrayList<BlogDto> list() {
         ArrayList<BlogDto> blogDtoList = new ArrayList<>();
         BlogDto blogDto;
-        try(Connection connection = getInterfaceConnection()) {
-            String sql = "SELECT * FROM onepage.blog";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()){
+        try (Connection connection = getInterfaceConnection()) {
+            // select * from one_page.blog;
+            String sql = "select * from onePage.blog";
+            PreparedStatement pstm = connection.prepareStatement(sql);
+            ResultSet resultSet = pstm.executeQuery();
+            while (resultSet.next()) {
                 blogDto = new BlogDto();
                 blogDto.setId(resultSet.getLong("id"));
                 blogDto.setHeader(resultSet.getString("header"));
                 blogDto.setContent(resultSet.getString("content"));
                 blogDto.setSystemCreatedDate(resultSet.getDate("created_date"));
+                // liste ekleme
                 blogDtoList.add(blogDto);
             }
-        }catch (Exception e){
+        } catch (SQLException sql) { // AritmeticException | ClassNotFoundException e
+            sql.printStackTrace();
+            throw new ResourceNotFoundException(" SQL Listeme İstisnası " + sql);
+        } catch (Exception e) { // AritmeticException | ClassNotFoundException e
             e.printStackTrace();
         }
         return blogDtoList;
-    }
-}
+    } // end LIST
+
+    // FIND
+    @Override
+    public BlogDto findById(Long id) {
+        BlogDto blogDto = new BlogDto();
+        try (Connection connection = getInterfaceConnection()) {
+            // select * from one_page.blog where id =1;;
+            String sql = "select * from onePage.blog where id=" + id;
+            PreparedStatement pstm = connection.prepareStatement(sql);
+            ResultSet resultSet = pstm.executeQuery();
+            //System.out.println(resultSet.next());
+            //boolean isFind=resultSet.first();
+            while (resultSet.next()) {
+                blogDto.setId(resultSet.getLong("id"));
+                blogDto.setHeader(resultSet.getString("header"));
+                blogDto.setContent(resultSet.getString("content"));
+                blogDto.setSystemCreatedDate(resultSet.getDate("created_date"));
+            }
+            System.out.println(blogDto);
+        } catch (SQLException sql) { // AritmeticException | ClassNotFoundException e
+            sql.printStackTrace();
+            throw new ResourceNotFoundException(" SQL Find İstisnası " + sql);
+        } catch (Exception e) { // AritmeticException | ClassNotFoundException e
+            e.printStackTrace();
+        }
+        return blogDto;
+    } // end FIND
+
+    // UPDATE
+    @Override
+    public void update(BlogDto blogDto) {
+        try (Connection connection = getInterfaceConnection()) {
+            // Transaction: ya hep ya hiç kuralına göre çalışır
+            // Create, Delete, Update
+            connection.setAutoCommit(false);
+            // update one_page.blog set header="Hamit55",content="Mızrak55" where id =1;
+            String sql = "update onePage.blog set header=? ,content=? where id =?";
+            PreparedStatement pstm = connection.prepareStatement(sql);
+            pstm.setString(1, blogDto.getHeader());
+            pstm.setString(2, blogDto.getContent());
+            pstm.setLong(3, blogDto.getId());
+            // UPDATE YAPISILSIN
+            // executeUpdate: CREATE, DELETE, UPDATE
+            // executeQuery : SELECT
+            Integer rowsEffected = pstm.executeUpdate();
+            // Eğer Sıfırdan büyükse : Eklemiş -1=ise Eklenmemiş
+            if (rowsEffected > 0) {
+                System.out.println(BlogDto.class + " ID: "+blogDto.getId()+" SİLİNDİ");
+                connection.commit();
+            } else {
+                System.out.println(BlogDto.class + " HATA Güncellenemedi !!!!");
+                connection.rollback();
+            }
+        } catch (SQLException sql) { // AritmeticException | ClassNotFoundException e
+            sql.printStackTrace();
+            throw new ResourceNotFoundException(" SQL Güncelleme İstisnası " + sql);
+        } catch (Exception e) { // AritmeticException | ClassNotFoundException e
+            e.printStackTrace();
+        }
+    } // end UPDATE
+
+    // DELETE
+    @Override
+    public void delete(BlogDto blogDto) {
+        try (Connection connection = getInterfaceConnection()) {
+            // Transaction: ya hep ya hiç kuralına göre çalışır
+            // Create, Delete, Update
+            connection.setAutoCommit(false);
+            //Eğer İlgili ID varsa Güncelleme yapsın yoksa yapmasın
+
+            String sql = "delete FROM onePage.blog where id=?";
+            PreparedStatement pstm = connection.prepareStatement(sql);
+            pstm.setLong(1, blogDto.getId());
+            // DELETE YAPISILSIN
+            // executeUpdate: CREATE, DELETE, UPDATE
+            // executeQuery : SELECT
+            Integer rowsEffected = pstm.executeUpdate();
+            // Eğer Sıfırdan büyükse : Eklemiş -1=ise Eklenmemiş
+            if (rowsEffected > 0) {
+                System.out.println(BlogDto.class + " ID: " + blogDto.getId() + " Silindir");
+                connection.commit();
+            } else {
+                System.out.println(BlogDto.class + " HATA Silinmedi !!!!");
+                connection.rollback();
+            }
+        } catch (SQLException sql) { // AritmeticException | ClassNotFoundException e
+            sql.printStackTrace();
+            throw new ResourceNotFoundException(" SQL Güncelleme İstisnası " + sql);
+        } catch (Exception e) { // AritmeticException | ClassNotFoundException e
+            e.printStackTrace();
+        }
+    }//end DELETE
+
+} //end class

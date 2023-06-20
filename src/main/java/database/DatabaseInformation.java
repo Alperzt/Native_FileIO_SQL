@@ -2,7 +2,9 @@ package database;
 
 import lombok.Getter;
 import lombok.Setter;
+import util.FileNewPath;
 
+// LOMBOK
 @Getter @Setter
 public class DatabaseInformation {
     private String user;
@@ -10,13 +12,20 @@ public class DatabaseInformation {
     private String url;
     private String forNameData;
 
-    public DatabaseInformation() {
-        this.user = "root";
-        this.password = "root";
-        this.url = "jdbc:mysql://localhost:3306/blog";
-        this.forNameData = "com.mysql.cj.jdbc.Driver";
-    }
+    // File Path Name
+    private FileNewPath fileNewPath;
 
+    // parametresiz constructor
+    public DatabaseInformation() {
+        this.user="root";
+        this.password="root";
+        this.url="jdbc:mysql://localhost:3306/onePage";
+        this.forNameData="com.mysql.cj.jdbc.Driver";
+        // New File Path
+        fileNewPath=new FileNewPath();
+    }
+    // parametreli constructor
+    // String user, String password, String url, String forNameData
     public DatabaseInformation(String user, String password, String url, String forNameData) {
         this.user = user;
         this.password = password;
