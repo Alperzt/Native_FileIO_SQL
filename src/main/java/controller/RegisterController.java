@@ -46,6 +46,15 @@ public class RegisterController {
         }
     }
 
+
+    private void fileWriter(String data){
+        try(BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileNewPath.getPath(),false))) {
+            bufferedWriter.write(data);
+            bufferedWriter.flush();
+        }catch (Exception exception){
+            exception.printStackTrace();
+        }
+    }
     // READER HAK SAYISI
     private Integer myFileReader() {
         String dataToString = null;
@@ -96,6 +105,7 @@ public class RegisterController {
             userPassword = klavye.nextLine();
             if (InMemoryData.FAKE_PASSWORD.equals(userPassword) && InMemoryData.FAKE_PASSWORD.equals(userEmail)) {
                 System.out.println("Admin Sayfasına Yönlendiriliyorsunuz");
+                fileWriter("5");
                 return true;
             } else {
                 System.out.println("Kalan Hakkınız: " + (counter - 1));

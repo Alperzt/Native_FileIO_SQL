@@ -57,7 +57,7 @@ public class BlogDao implements IDaoGenerics<BlogDto> {
                 blogDto.setId(resultSet.getLong("id"));
                 blogDto.setHeader(resultSet.getString("header"));
                 blogDto.setContent(resultSet.getString("content"));
-                blogDto.setSystemCreatedDate(resultSet.getDate("created_date"));
+                blogDto.setSystemCreatedDate(resultSet.getDate("createdDate"));
                 // liste ekleme
                 blogDtoList.add(blogDto);
             }
@@ -85,7 +85,7 @@ public class BlogDao implements IDaoGenerics<BlogDto> {
                 blogDto.setId(resultSet.getLong("id"));
                 blogDto.setHeader(resultSet.getString("header"));
                 blogDto.setContent(resultSet.getString("content"));
-                blogDto.setSystemCreatedDate(resultSet.getDate("created_date"));
+                blogDto.setSystemCreatedDate(resultSet.getDate("createdDate"));
             }
             System.out.println(blogDto);
         } catch (SQLException sql) { // AritmeticException | ClassNotFoundException e
